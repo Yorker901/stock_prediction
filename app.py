@@ -16,20 +16,24 @@ st.title('Multi-Stock Price Prediction Application :chart_with_upwards_trend:')
 # Sidebar for inputs
 st.sidebar.title('Input Parameters')
 
-# Input for stock tickers (allowing multiple tickers)
-stock_tickers = st.sidebar.text_input('Enter Stock Tickers (separated by commas)', 'AAPL,GOOG,MSFT')
+# Function to fetch stock tickers with autocomplete
+@st.cache
+def fetch_stock_tickers():
+    return yf.Tickers()
+
+stock_tickers = fetch_stock_tickers()
+
+# Input for stock tickers (multiselect with autocomplete)
+selected_tickers = st.sidebar.multiselect('Select Stock Tickers', stock_tickers.symbols, help="Type to search and select")
 
 # Input for prediction date
 prediction_date = st.sidebar.date_input('Enter Prediction Date', pd.to_datetime('2024-06-01'))
 
 if st.sidebar.button('Predict'):
-    # Split the input into individual ticker symbols
-    tickers = [ticker.strip() for ticker in stock_tickers.split(',')]
-
     # Initialize a dictionary to store data for each stock
     stock_data_dict = {}
 
-    for ticker in tickers:
+    for ticker in selected_tickers:
         # Fetch historical stock data for each ticker
         stock_data = yf.download(ticker, start='2010-01-01', end=prediction_date)
 
@@ -77,4 +81,4 @@ if st.sidebar.button('Predict'):
         plt.legend()
         st.pyplot(plt)
 else:
-    st.write("Please input stock tickers and prediction date, then click 'Predict'.")
+    st.write("Please select stock tickers and prediction date, then click 'Predict'.")
