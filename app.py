@@ -16,8 +16,7 @@ st.title('Multi-Stock Price Prediction Application :chart_with_upwards_trend:')
 # Sidebar for inputs
 st.sidebar.title('Input Parameters')
 
-# Function to fetch stock tickers with autocomplete
-@st.cache
+# Function to fetch stock tickers
 def fetch_stock_tickers():
     return yf.Tickers()
 
