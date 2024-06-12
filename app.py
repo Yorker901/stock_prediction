@@ -7,7 +7,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 
 # Load the trained model
-model = joblib.load('reliance_stock_model.pkl')
+model = joblib.load('multi_stock_model.pkl')
 
 # Streamlit app configuration
 st.set_page_config(page_title='Stock Price Prediction', page_icon=':chart_with_upwards_trend:', layout='wide')
