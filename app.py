@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 import joblib
 import yfinance as yf
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objs as go
 
 # Load the trained model
 model = joblib.load('multi_stock_model.pkl')
@@ -38,9 +38,9 @@ if st.sidebar.button('Predict'):
 
         if not stock_data.empty:
             # Prepare data for prediction
-            stock_data['Date'] = stock_data.index
-            stock_data['Date'] = stock_data['Date'].apply(lambda x: x.toordinal())
-
+            stock_data.reset_index(inplace=True)
+            stock_data['Date'] = stock_data['Date'].dt.strftime('%Y-%m-%d')
+            stock_data['Date'] = pd.to_datetime(stock_data['Date']).astype(int) / 10**9
             X = stock_data[['Date']]
             y = stock_data['Close']
 
@@ -68,16 +68,16 @@ if st.sidebar.button('Predict'):
         st.write(f'## Investment Recommendation: **{data["recommendation"]}**')
 
         # Plot historical and predicted prices
-        data['data']['Predicted'] = np.nan
-        data['data'].loc[data['data'].index[-1], 'Predicted'] = data['future_price']
+        fig = go.Figure()
 
-        plt.figure(figsize=(10, 6))
-        plt.plot(data['data']['Close'], label='Historical Prices')
-        plt.scatter(data['data'].index[-1], data['future_price'], color='red', label='Predicted Price')
-        plt.xlabel('Date')
-        plt.ylabel('Price')
-        plt.title(f'{ticker} Stock Prices')
-        plt.legend()
-        st.pyplot(plt)
+        # Plot historical prices
+        fig.add_trace(go.Scatter(x=data['data']['Date'], y=data['data']['Close'], mode='lines', name='Historical Prices'))
+
+        # Plot predicted price
+        fig.add_trace(go.Scatter(x=[data['data']['Date'].iloc[-1]], y=[data['future_price']], mode='markers', name='Predicted Price', marker=dict(color='red', size=10)))
+
+        # Update layout
+        fig.update_layout(title=f'{ticker} Stock Prices', xaxis_title='Date', yaxis_title='Price')
+        st.plotly_chart(fig)
 else:
     st.write("Please select stock tickers and prediction date, then click 'Predict'.")
