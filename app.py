@@ -13,17 +13,17 @@ model = joblib.load('multi_stock_model.pkl')
 st.set_page_config(page_title='Multi-Stock Price Prediction', page_icon=':chart_with_upwards_trend:', layout='wide')
 st.title('Multi-Stock Price Prediction Application :chart_with_upwards_trend:')
 
-# Sidebar for inputs
-st.sidebar.title('Input Parameters')
-
 # Function to fetch stock tickers
 def fetch_stock_tickers():
-    return yf.Tickers()
+    # Define a set of stock tickers
+    predefined_tickers = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'FB', 'TSLA', 'BABA', 'NVDA', 'JPM', 'JNJ', 
+                         'V', 'PYPL', 'WMT', 'PG', 'UNH', 'DIS', 'MA', 'CMCSA', 'INTC', 'ADBE']
+    return predefined_tickers
 
 stock_tickers = fetch_stock_tickers()
 
-# Input for stock tickers (multiselect with autocomplete)
-selected_tickers = st.sidebar.multiselect('Select Stock Tickers', stock_tickers.symbols, help="Type to search and select")
+# Input for stock tickers (multiselect)
+selected_tickers = st.sidebar.multiselect('Select Stock Tickers', stock_tickers, help="Select the stocks you want to predict")
 
 # Input for prediction date
 prediction_date = st.sidebar.date_input('Enter Prediction Date', pd.to_datetime('2024-06-01'))
